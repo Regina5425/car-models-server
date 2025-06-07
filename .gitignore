@@ -30,7 +30,7 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode/*
-!.vscode/settings.json
+.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -63,3 +63,6 @@ dev.db-journal
 generated/
 node_modules/.prisma/
 /generated/prisma
+
+# test files
+test.json

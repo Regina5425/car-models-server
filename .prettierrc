@@ -5,5 +5,5 @@
   "tabWidth": 2,
   "semi": true,
   "useTabs": false,
-  "arrowParens": "avoid"
+  "arrowParens": "always"
 }
