@@ -1,12 +1,23 @@
-import { Prisma } from 'generated/prisma';
+import { Prisma, User } from 'generated/prisma';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from 'src/auth/dto/sign-up.dto';
 import { hash } from 'argon2';
+import { userObject } from './user.object';
 
 @Injectable()
 export class UserService {
   public constructor(private readonly prisma: PrismaService) {}
+
+  async findAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      select: {
+        ...userObject,
+      },
+    });
+
+    return users;
+  }
 
   async findById(id: string, selectObject: Prisma.UserSelect = {}) {
     const user = await this.prisma.user.findUnique({
@@ -14,6 +25,7 @@ export class UserService {
         id,
       },
       select: {
+        ...userObject,
         favorites: {
           select: {
             id: true,
@@ -45,6 +57,7 @@ export class UserService {
         email,
       },
       select: {
+        ...userObject,
         favorites: {
           select: {
             id: true,
