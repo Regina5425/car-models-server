@@ -21,7 +21,7 @@ model User {
   favorites Car[]
   orders    Order[]
 
-  role UserRole @default(REGULAR)
+  role UserRole @default(USER)
 
   @@map("users")
 }
@@ -72,6 +72,6 @@ model Order {
 }
 
 enum UserRole {
-  REGULAR
+  USER
   ADMIN
 }
