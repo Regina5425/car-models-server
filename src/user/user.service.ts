@@ -11,9 +11,7 @@ export class UserService {
 
   async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      select: {
-        ...userObject,
-      },
+      select: userObject,
     });
 
     return users;
