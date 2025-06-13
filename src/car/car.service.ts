@@ -102,6 +102,16 @@ export class CarService {
   async update(id: string, dto: CarDto) {
     const { categoryId, description, image, name, price } = dto;
 
+    const car = await this.prisma.car.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!car) {
+      throw new NotFoundException('Модель товара не найдена');
+    }
+
     await this.categoryService.getById(categoryId);
 
     return await this.prisma.car.update({
@@ -124,6 +134,16 @@ export class CarService {
   }
 
   async delete(id: string) {
+    const car = await this.prisma.car.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!car) {
+      throw new NotFoundException('Модель товара не найдена');
+    }
+
     return await this.prisma.car.delete({
       where: {
         id,

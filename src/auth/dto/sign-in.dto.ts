@@ -6,7 +6,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class AuthDto {
+export class SignInDto {
   @IsEmail({}, { message: 'Некорректный формат email' })
   @MaxLength(64, { message: 'Email не должен быть больше 64 символов' })
   @IsNotEmpty({ message: 'Email обязателен для заполнения' })

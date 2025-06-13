@@ -5,22 +5,49 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto } from './dto/auth.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { verify } from 'argon2';
 import { User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UserService } from 'src/user/user.service';
+import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from './interfaces/jwt.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly JWT_ACCESS_TOKEN_TTL: string;
+  private readonly JWT_REFRESH_TOKEN_TTL: string;
+
   constructor(
     private readonly prisma: PrismaService,
-    private jwt: JwtService,
-    private userService: UserService,
-  ) {}
+    private readonly jwt: JwtService,
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
+  ) {
+    this.JWT_ACCESS_TOKEN_TTL = configService.getOrThrow<string>(
+      'JWT_ACCESS_TOKEN_TTL',
+    );
+    this.JWT_REFRESH_TOKEN_TTL = configService.getOrThrow<string>(
+      'JWT_REFRESH_TOKEN_TTL',
+    );
+  }
 
-  private async validateUser(dto: AuthDto) {
+  async validateUserById(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return user;
+  }
+
+  private async validateUser(dto: SignInDto) {
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -51,30 +78,32 @@ export class AuthService {
     };
   }
 
-  private issueTokens(userId: string) {
-    const data = { id: userId };
+  private generateTokens(userId: string) {
+    const payload: JwtPayload = { id: userId };
 
-    const accessToken = this.jwt.sign(data, {
-      expiresIn: '1h', //TODO: сменить на 15 мин
+    const accessToken = this.jwt.sign(payload, {
+      expiresIn: this.JWT_ACCESS_TOKEN_TTL,
     });
 
-    const refreshToken = this.jwt.sign(data, {
-      expiresIn: '7d',
+    const refreshToken = this.jwt.sign(payload, {
+      expiresIn: this.JWT_REFRESH_TOKEN_TTL,
     });
 
     return { accessToken, refreshToken };
   }
 
-  async getTokens(refreshToken: string) {
-    const result = await this.jwt.verifyAsync<{ id: string }>(refreshToken);
+  async refreshToken(refreshToken: string) {
+    const payload: JwtPayload = await this.jwt.verifyAsync<{ id: string }>(
+      refreshToken,
+    );
 
-    if (!result) {
+    if (!payload) {
       throw new UnauthorizedException('Неверный refresh token');
     }
 
     const user = await this.prisma.user.findUnique({
       where: {
-        id: result.id,
+        id: payload.id,
       },
     });
 
@@ -82,7 +111,7 @@ export class AuthService {
       throw new NotFoundException('Пользователь не найден');
     }
 
-    const tokens = this.issueTokens(user.id);
+    const tokens = this.generateTokens(user.id);
 
     return {
       user: this.returnUserFileds(user),
@@ -105,7 +134,7 @@ export class AuthService {
 
     const newUser = await this.userService.create(dto);
 
-    const tokens = this.issueTokens(newUser.id);
+    const tokens = this.generateTokens(newUser.id);
 
     return {
       user: this.returnUserFileds(newUser),
@@ -113,10 +142,10 @@ export class AuthService {
     };
   }
 
-  async signIn(dto: AuthDto) {
+  async signIn(dto: SignInDto) {
     const user = await this.validateUser(dto);
 
-    const tokens = this.issueTokens(user.id);
+    const tokens = this.generateTokens(user.id);
 
     return {
       user: this.returnUserFileds(user),
