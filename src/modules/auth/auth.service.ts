@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { verify } from 'argon2';
 import { User } from 'generated/prisma';
