@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { Auth } from './decorators/auth.decorator';
+import { Auth } from 'src/common/decorators/auth.decorator';
 
 @Controller('auth')
 export class AuthController {

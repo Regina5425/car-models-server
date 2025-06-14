@@ -10,9 +10,9 @@ import { verify } from 'argon2';
 import { User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/sign-up.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/modules/user/user.service';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from './interfaces/jwt.interface';
+import { JwtPayload } from 'src/common/interfaces/jwt.interface';
 
 @Injectable()
 export class AuthService {

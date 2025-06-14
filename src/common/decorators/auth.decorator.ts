@@ -1,8 +1,8 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserRole } from 'generated/prisma';
-import { Roles } from 'src/user/decorators/roles.decorator';
-import { RolesGuard } from 'src/user/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../guards/roles.guard';
 
 export const Auth = (...roles: UserRole[]) => {
   if (roles.length > 0) {
