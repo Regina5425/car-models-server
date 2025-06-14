@@ -11,7 +11,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CarService } from './car.service';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Auth } from 'src/common/decorators/auth.decorator';
 import { UserRole } from 'generated/prisma';
 import { CarDto } from './dto/car.dto';
 

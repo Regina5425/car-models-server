@@ -1,5 +1,5 @@
 import { Prisma } from 'generated/prisma';
-import { categoryObject } from 'src/category/category.object';
+import { categoryObject } from 'src/modules/category/category.object';
 
 export const carObject: Prisma.CarSelect = {
   id: true,

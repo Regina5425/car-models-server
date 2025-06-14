@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { UserRole } from 'generated/prisma';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Auth } from 'src/common/decorators/auth.decorator';
 import { CategoryDto } from './dto/category.dto';
 
 @Controller('category')

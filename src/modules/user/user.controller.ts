@@ -9,8 +9,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { CurrentUser } from 'src/user/decorators/user.decorator';
+import { Auth } from 'src/common/decorators/auth.decorator';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { UserRole } from 'generated/prisma';
 
 @Controller('user')
