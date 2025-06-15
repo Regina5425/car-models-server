@@ -4,6 +4,7 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { hash } from 'argon2';
 import { userObject } from './user.object';
 import { SignUpDto } from '../auth/dto/sign-up.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -92,6 +93,28 @@ export class UserService {
     });
 
     return user;
+  }
+
+  async update(userId: string, dto: UpdateUserDto) {
+    const user = await this.findById(userId);
+
+    const { avatar, email, name, phone } = dto;
+
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        email,
+        avatar,
+        name,
+        phone,
+        updatedAt: new Date(),
+      },
+      select: userObject,
+    });
+
+    return updatedUser;
   }
 
   async toggleFavorites(userId: string, carId: string) {
