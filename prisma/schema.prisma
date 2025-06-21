@@ -21,9 +21,24 @@ model User {
   favorites Car[]
   orders    Order[]
 
-  role UserRole @default(USER)
+  role         UserRole       @default(USER)
+  refreshToken RefreshToken[]
 
   @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+  token       String @unique
+  fingerprint String
+
+  @@unique([userId, fingerprint])
+  @@map("refresh_token")
 }
 
 model Car {

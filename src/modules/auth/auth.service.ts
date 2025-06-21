@@ -78,8 +78,8 @@ export class AuthService {
     };
   }
 
-  private generateTokens(userId: string) {
-    const payload: JwtPayload = { id: userId };
+  private async generateTokens(userId: string, fingerprint: string) {
+    const payload: JwtPayload = { id: userId, fingerprint };
 
     const accessToken = this.jwt.sign(payload, {
       expiresIn: this.JWT_ACCESS_TOKEN_TTL,
@@ -89,16 +89,43 @@ export class AuthService {
       expiresIn: this.JWT_REFRESH_TOKEN_TTL,
     });
 
+    await this.prisma.refreshToken.upsert({
+      where: {
+        userId_fingerprint: {
+          userId,
+          fingerprint,
+        },
+      },
+      update: {
+        token: refreshToken,
+      },
+      create: {
+        userId,
+        token: refreshToken,
+        fingerprint,
+      },
+    });
+
     return { accessToken, refreshToken };
   }
 
-  async refreshToken(refreshToken: string) {
-    const payload: JwtPayload = await this.jwt.verifyAsync<{ id: string }>(
-      refreshToken,
-    );
+  async refreshToken(refreshToken: string, fingerprint: string) {
+    const payload = await this.jwt.verifyAsync<JwtPayload>(refreshToken);
 
     if (!payload) {
       throw new UnauthorizedException('Неверный refresh token');
+    }
+
+    if (payload.fingerprint !== fingerprint) {
+      throw new UnauthorizedException('Неверное устройство');
+    }
+
+    const storedToken = await this.prisma.refreshToken.findFirst({
+      where: { userId: payload.id, fingerprint, token: refreshToken },
+    });
+
+    if (!storedToken) {
+      throw new UnauthorizedException('Токен отозван');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -111,7 +138,7 @@ export class AuthService {
       throw new NotFoundException('Пользователь не найден');
     }
 
-    const tokens = this.generateTokens(user.id);
+    const tokens = await this.generateTokens(user.id, fingerprint);
 
     return {
       user: this.returnUserFileds(user),
@@ -119,7 +146,7 @@ export class AuthService {
     };
   }
 
-  async signUp(dto: SignUpDto) {
+  async signUp(dto: SignUpDto, fingerprint: string) {
     const existUser = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -133,8 +160,7 @@ export class AuthService {
     }
 
     const newUser = await this.userService.create(dto);
-
-    const tokens = this.generateTokens(newUser.id);
+    const tokens = await this.generateTokens(newUser.id, fingerprint);
 
     return {
       user: this.returnUserFileds(newUser),
@@ -142,14 +168,22 @@ export class AuthService {
     };
   }
 
-  async signIn(dto: SignInDto) {
+  async signIn(dto: SignInDto, fingerprint: string) {
     const user = await this.validateUser(dto);
-
-    const tokens = this.generateTokens(user.id);
+    const tokens = await this.generateTokens(user.id, fingerprint);
 
     return {
       user: this.returnUserFileds(user),
       ...tokens,
     };
+  }
+
+  async logout(userId: string, fingerprint: string) {
+    await this.prisma.refreshToken.deleteMany({
+      where: {
+        userId,
+        fingerprint,
+      },
+    });
   }
 }
