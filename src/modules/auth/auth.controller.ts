@@ -22,14 +22,12 @@ export class AuthController {
 
   @Post('sign-up')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(FingerprintGuard)
   async signUp(@Body() dto: SignUpDto, @Fingerprint() fingerprint: string) {
     return this.authService.signUp(dto, fingerprint);
   }
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(FingerprintGuard)
   async signIn(@Body() dto: SignInDto, @Fingerprint() fingerprint: string) {
     return this.authService.signIn(dto, fingerprint);
   }

@@ -1,10 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class UpdateUserDto {
   @IsEmail({}, { message: 'Некорректный формат email' })
@@ -19,8 +13,4 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty({ message: 'Номер телефона обязателен для заполнения' })
   phone: string;
-
-  @IsString()
-  @IsOptional()
-  avatar: string;
 }

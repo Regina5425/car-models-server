@@ -5,6 +5,7 @@ import { hash } from 'argon2';
 import { userObject } from './user.object';
 import { SignUpDto } from '../auth/dto/sign-up.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class UserService {
@@ -89,6 +90,7 @@ export class UserService {
         name: dto.name,
         password: await hash(dto.password),
         phone: dto.phone,
+        avatar: faker.image.avatarGitHub(),
       },
     });
 
@@ -98,7 +100,7 @@ export class UserService {
   async update(userId: string, dto: UpdateUserDto) {
     const user = await this.findById(userId);
 
-    const { avatar, email, name, phone } = dto;
+    const { email, name, phone } = dto;
 
     const updatedUser = await this.prisma.user.update({
       where: {
@@ -106,7 +108,6 @@ export class UserService {
       },
       data: {
         email,
-        avatar,
         name,
         phone,
         updatedAt: new Date(),
