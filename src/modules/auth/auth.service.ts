@@ -5,11 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { SignInDto } from './dto/sign-in.dto';
+import { SignInDto, SignUpDto } from './dto/auth.dto';
 import { verify } from 'argon2';
 import { User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
-import { SignUpDto } from './dto/sign-up.dto';
 import { UserService } from 'src/modules/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from 'src/common/interfaces/jwt.interface';
@@ -117,7 +116,7 @@ export class AuthService {
     }
 
     if (payload.fingerprint !== fingerprint) {
-      throw new UnauthorizedException('Неверное устройство');
+      throw new UnauthorizedException('Неверно указано устройство');
     }
 
     const storedToken = await this.prisma.refreshToken.findFirst({
@@ -141,7 +140,6 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, fingerprint);
 
     return {
-      user: this.returnUserFileds(user),
       ...tokens,
     };
   }
@@ -185,5 +183,7 @@ export class AuthService {
         fingerprint,
       },
     });
+
+    return true;
   }
 }

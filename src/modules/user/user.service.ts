@@ -3,8 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { hash } from 'argon2';
 import { userObject } from './user.object';
-import { SignUpDto } from '../auth/dto/sign-up.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { SignUpDto } from '../auth/dto/auth.dto';
+import { UpdateUserDto } from './dto/user.dto';
 import { faker } from '@faker-js/faker';
 
 @Injectable()
@@ -100,6 +100,10 @@ export class UserService {
   async update(userId: string, dto: UpdateUserDto) {
     const user = await this.findById(userId);
 
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
     const { email, name, phone } = dto;
 
     const updatedUser = await this.prisma.user.update({
@@ -125,6 +129,16 @@ export class UserService {
       throw new NotFoundException('Пользователь не найден');
     }
 
+    const car = await this.prisma.car.findUnique({
+      where: {
+        id: carId,
+      },
+    });
+
+    if (!car) {
+      throw new NotFoundException('Модель не найдена');
+    }
+
     const isExist = user.favorites.some((car) => car.id === carId);
 
     await this.prisma.user.update({
@@ -140,6 +154,10 @@ export class UserService {
       },
     });
 
-    return { status: true, message: 'Успешно' };
+    return {
+      status: true,
+      message: 'Success',
+      action: isExist ? 'removed' : 'added',
+    };
   }
 }
