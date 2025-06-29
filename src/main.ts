@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { setupSwagger } from './utils/swagger.utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +26,8 @@ async function bootstrap() {
     credentials: true,
     exposedHeaders: true,
   });
+
+  setupSwagger(app);
 
   await app.listen(config.getOrThrow<number>('PORT') ?? 4200);
 }

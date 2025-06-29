@@ -55,7 +55,7 @@ export class CarService {
     });
 
     if (!car) {
-      throw new NotFoundException('Модель товара не найдена');
+      throw new NotFoundException('Модель не найдена');
     }
 
     return car;
@@ -72,7 +72,7 @@ export class CarService {
     });
 
     if (!cars) {
-      throw new NotFoundException('Модель товара не найдена');
+      throw new NotFoundException('Модель не найдена');
     }
 
     return cars;
@@ -109,7 +109,7 @@ export class CarService {
     });
 
     if (!car) {
-      throw new NotFoundException('Модель товара не найдена');
+      throw new NotFoundException('Модель не найдена');
     }
 
     await this.categoryService.getById(categoryId);
@@ -141,7 +141,7 @@ export class CarService {
     });
 
     if (!car) {
-      throw new NotFoundException('Модель товара не найдена');
+      throw new NotFoundException('Модель не найдена');
     }
 
     return await this.prisma.car.delete({
