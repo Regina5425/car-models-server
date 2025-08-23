@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CarDto } from './dto/car.dto';
+import { ModelDto } from './dto/model.dto';
 import { generateSlug } from 'src/shared/utils/generate-slug';
-import { carObject } from './car.object';
+import { modelObject } from './model.object';
 import { CategoryService } from 'src/modules/category/category.service';
 
 @Injectable()
-export class CarService {
+export class ModelService {
   public constructor(
     private readonly prisma: PrismaService,
     private readonly categoryService: CategoryService,
@@ -16,8 +16,8 @@ export class CarService {
     if (searchTerm) {
       return this.search(searchTerm);
     }
-    return this.prisma.car.findMany({
-      select: carObject,
+    return this.prisma.model.findMany({
+      select: modelObject,
       orderBy: {
         createdAt: 'desc',
       },
@@ -27,7 +27,7 @@ export class CarService {
   async search(searchTerm: string) {
     const term = searchTerm.toLowerCase();
 
-    return this.prisma.car.findMany({
+    return this.prisma.model.findMany({
       where: {
         OR: [
           {
@@ -42,48 +42,48 @@ export class CarService {
           },
         ],
       },
-      select: carObject,
+      select: modelObject,
     });
   }
 
   async getBySlug(slug: string) {
-    const car = await this.prisma.car.findUnique({
+    const model = await this.prisma.model.findUnique({
       where: {
         slug,
       },
-      select: carObject,
+      select: modelObject,
     });
 
-    if (!car) {
+    if (!model) {
       throw new NotFoundException('Модель не найдена');
     }
 
-    return car;
+    return model;
   }
 
   async getByCategory(categorySlug: string) {
-    const cars = await this.prisma.car.findMany({
+    const models = await this.prisma.model.findMany({
       where: {
         category: {
           slug: categorySlug,
         },
       },
-      select: carObject,
+      select: modelObject,
     });
 
-    if (!cars) {
+    if (!models) {
       throw new NotFoundException('Модель не найдена');
     }
 
-    return cars;
+    return models;
   }
 
-  async create(dto: CarDto) {
+  async create(dto: ModelDto) {
     const { categoryId, description, image, name, price } = dto;
 
     await this.categoryService.getById(categoryId);
 
-    return await this.prisma.car.create({
+    return await this.prisma.model.create({
       data: {
         name,
         description,
@@ -99,22 +99,22 @@ export class CarService {
     });
   }
 
-  async update(id: string, dto: CarDto) {
+  async update(id: string, dto: ModelDto) {
     const { categoryId, description, image, name, price } = dto;
 
-    const car = await this.prisma.car.findUnique({
+    const model = await this.prisma.model.findUnique({
       where: {
         id,
       },
     });
 
-    if (!car) {
+    if (!model) {
       throw new NotFoundException('Модель не найдена');
     }
 
     await this.categoryService.getById(categoryId);
 
-    return await this.prisma.car.update({
+    return await this.prisma.model.update({
       where: {
         id,
       },
@@ -134,17 +134,17 @@ export class CarService {
   }
 
   async delete(id: string) {
-    const car = await this.prisma.car.findUnique({
+    const model = await this.prisma.model.findUnique({
       where: {
         id,
       },
     });
 
-    if (!car) {
+    if (!model) {
       throw new NotFoundException('Модель не найдена');
     }
 
-    return await this.prisma.car.delete({
+    return await this.prisma.model.delete({
       where: {
         id,
       },

@@ -5,7 +5,7 @@ import {
   CategoryResponseDto,
 } from 'src/modules/category/dto/category.dto';
 
-export class CarDto {
+export class ModelDto {
   @ApiProperty({
     description: 'Название модели',
     example: 'Audi Q7',
@@ -26,7 +26,7 @@ export class CarDto {
 
   @ApiProperty({
     description: 'Путь к файлу картинки',
-    example: '/uploads/cars/example.png',
+    example: '/uploads/models/example.png',
     type: String,
   })
   @IsString()
@@ -51,10 +51,10 @@ export class CarDto {
   categoryId: string;
 }
 
-export class CarResponseDto {
+export class ModelResponseDto {
   @ApiProperty({
     description: 'ID модели',
-    example: 'car-id',
+    example: 'model-id',
     type: String,
   })
   id: string;
@@ -82,7 +82,7 @@ export class CarResponseDto {
 
   @ApiProperty({
     description: 'Путь к файлу картинки',
-    example: '/uploads/cars/example.png',
+    example: '/uploads/models/example.png',
     type: String,
   })
   image: string;
@@ -109,10 +109,10 @@ export class CarResponseDto {
   category: CategoryResponseDto;
 }
 
-export class CreatedCarResponseDto {
+export class CreatedModelResponseDto {
   @ApiProperty({
     description: 'ID модели',
-    example: 'car-id',
+    example: 'model-id',
     type: String,
   })
   id: string;
@@ -140,7 +140,7 @@ export class CreatedCarResponseDto {
 
   @ApiProperty({
     description: 'Путь к файлу картинки',
-    example: '/uploads/cars/example.png',
+    example: '/uploads/models/example.png',
     type: String,
   })
   image: string;
@@ -181,10 +181,10 @@ export class CreatedCarResponseDto {
   userId: string;
 }
 
-export class FavoritesCarResponseDto {
+export class FavoritesModelResponseDto {
   @ApiProperty({
     description: 'ID модели',
-    example: 'car-id',
+    example: 'model-id',
     type: String,
   })
   id: string;
@@ -205,7 +205,7 @@ export class FavoritesCarResponseDto {
 
   @ApiProperty({
     description: 'Путь к файлу картинки',
-    example: '/uploads/cars/example.png',
+    example: '/uploads/models/example.png',
     type: String,
   })
   image: string;

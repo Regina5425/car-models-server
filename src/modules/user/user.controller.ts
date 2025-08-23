@@ -87,7 +87,7 @@ export class UserController {
     summary: 'Избранное',
     description: 'Добавление в избранное или удаление из избранного',
   })
-  @ApiParam({ name: 'carId', type: 'string', description: 'ID модели' })
+  @ApiParam({ name: 'modelId', type: 'string', description: 'ID модели' })
   @ApiOkResponse({
     type: ToggleFavoritesResponseDto,
     description: 'Успешное добавление/удаление из избранного',
@@ -97,12 +97,12 @@ export class UserController {
   })
   @HttpCode(HttpStatus.OK)
   @Auth()
-  @Patch('profile/favorites/:carId')
+  @Patch('profile/favorites/:modelId')
   async toggleFavorites(
     @CurrentUser('id') id: string,
-    @Param('carId') carId: string,
+    @Param('modelId') modelId: string,
   ) {
-    return this.userService.toggleFavorites(id, carId);
+    return this.userService.toggleFavorites(id, modelId);
   }
 
   @ApiOperation({

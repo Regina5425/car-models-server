@@ -7,7 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { UserRole } from 'generated/prisma';
-import { FavoritesCarResponseDto } from 'src/modules/car/dto/car.dto';
+import { FavoritesModelResponseDto } from 'src/modules/model/dto/model.dto';
 
 export class UpdateUserDto {
   @ApiProperty({
@@ -98,10 +98,10 @@ export class UserWithFavoritesResponseDto extends UserResponseDto {
         },
       },
     ],
-    type: [FavoritesCarResponseDto],
+    type: [FavoritesModelResponseDto],
   })
   @IsOptional()
-  favorites: FavoritesCarResponseDto[];
+  favorites: FavoritesModelResponseDto[];
 }
 
 export class ToggleFavoritesResponseDto {

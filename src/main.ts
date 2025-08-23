@@ -22,9 +22,14 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: config.getOrThrow<string>('ALLOWED_ORIGIN'),
-    credentials: true,
+    origin: [
+      'http://localhost:8081',
+      'http://192.168.0.101:8081',
+      'exp://192.168.0.101:8081',
+    ],
+    credentials: false,
     exposedHeaders: true,
+    allowedHeaders: 'Content-Type, Authorization, x-device-fingerprint',
   });
 
   setupSwagger(app);

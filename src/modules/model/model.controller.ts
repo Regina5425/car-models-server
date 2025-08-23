@@ -10,10 +10,9 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-import { CarService } from './car.service';
+import { ModelService } from './model.service';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { UserRole } from 'generated/prisma';
-import { CarDto, CarResponseDto, CreatedCarResponseDto } from './dto/car.dto';
 import {
   ApiBearerAuth,
   ApiTags,
@@ -23,18 +22,23 @@ import {
   ApiForbiddenResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import {
+  CreatedModelResponseDto,
+  ModelDto,
+  ModelResponseDto,
+} from './dto/model.dto';
 
-@ApiTags('Car')
+@ApiTags('Model')
 @ApiBearerAuth()
-@Controller('car')
-export class CarController {
-  constructor(private readonly carService: CarService) {}
+@Controller('model')
+export class ModelController {
+  constructor(private readonly modelService: ModelService) {}
 
   @ApiOperation({
     summary: 'Получение списка всех моделей',
     description: 'Возвращает список всех моделей в виде массива',
   })
-  @ApiOkResponse({ type: [CarResponseDto] })
+  @ApiOkResponse({ type: [ModelResponseDto] })
   @ApiQuery({
     name: 'search',
     required: false,
@@ -43,53 +47,53 @@ export class CarController {
   @HttpCode(HttpStatus.OK)
   @Get()
   async getAll(@Query('search') searchTerm?: string) {
-    return this.carService.getAll(searchTerm);
+    return this.modelService.getAll(searchTerm);
   }
 
   @ApiOperation({
     summary: 'Получение модели по slug',
     description: 'Возвращает найденную модель',
   })
-  @ApiOkResponse({ type: CarResponseDto })
+  @ApiOkResponse({ type: ModelResponseDto })
   @ApiNotFoundResponse({ description: 'Модель не найдена' })
   @HttpCode(HttpStatus.OK)
   @Get('by-slug/:slug')
   async getBySlug(@Param('slug') slug: string) {
-    return this.carService.getBySlug(slug);
+    return this.modelService.getBySlug(slug);
   }
 
   @ApiOperation({
     summary: 'Получение моделей по категории',
     description: 'Возвращает все модели этой категории',
   })
-  @ApiOkResponse({ type: [CarResponseDto] })
+  @ApiOkResponse({ type: [ModelResponseDto] })
   @ApiNotFoundResponse({ description: 'Модель не найдена' })
   @HttpCode(HttpStatus.OK)
   @Get('by-category/:categorySlug')
   async getByCategory(@Param('categorySlug') categorySlug: string) {
-    return this.carService.getByCategory(categorySlug);
+    return this.modelService.getByCategory(categorySlug);
   }
 
   @ApiOperation({
     summary: 'Создание модели',
     description: 'Создание новой модели',
   })
-  @ApiOkResponse({ type: CreatedCarResponseDto })
+  @ApiOkResponse({ type: CreatedModelResponseDto })
   @ApiForbiddenResponse({
     description: 'Доступ запрещен (требуются права ADMIN)',
   })
   @HttpCode(HttpStatus.OK)
   @Post()
   @Auth(UserRole.ADMIN)
-  async create(@Body() dto: CarDto) {
-    return this.carService.create(dto);
+  async create(@Body() dto: ModelDto) {
+    return this.modelService.create(dto);
   }
 
   @ApiOperation({
     summary: 'Обновление модели',
     description: 'Обновление сведений о модели',
   })
-  @ApiOkResponse({ type: CreatedCarResponseDto })
+  @ApiOkResponse({ type: CreatedModelResponseDto })
   @ApiNotFoundResponse({ description: 'Модель не найдена' })
   @ApiForbiddenResponse({
     description: 'Доступ запрещен (требуются права ADMIN)',
@@ -97,15 +101,15 @@ export class CarController {
   @HttpCode(HttpStatus.OK)
   @Put(':id')
   @Auth(UserRole.ADMIN)
-  async update(@Param('id') id: string, @Body() dto: CarDto) {
-    return this.carService.update(id, dto);
+  async update(@Param('id') id: string, @Body() dto: ModelDto) {
+    return this.modelService.update(id, dto);
   }
 
   @ApiOperation({
     summary: 'Удаление модели',
     description: 'Удаление данных модели',
   })
-  @ApiOkResponse({ type: CreatedCarResponseDto })
+  @ApiOkResponse({ type: CreatedModelResponseDto })
   @ApiNotFoundResponse({ description: 'Модель не найдена' })
   @ApiForbiddenResponse({
     description: 'Доступ запрещен (требуются права ADMIN)',
@@ -114,6 +118,6 @@ export class CarController {
   @Delete(':id')
   @Auth(UserRole.ADMIN)
   async delete(@Param('id') id: string) {
-    return this.carService.delete(id);
+    return this.modelService.delete(id);
   }
 }

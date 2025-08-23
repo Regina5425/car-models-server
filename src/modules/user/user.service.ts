@@ -122,24 +122,24 @@ export class UserService {
     return updatedUser;
   }
 
-  async toggleFavorites(userId: string, carId: string) {
+  async toggleFavorites(userId: string, modelId: string) {
     const user = await this.findById(userId);
 
     if (!user) {
       throw new NotFoundException('Пользователь не найден');
     }
 
-    const car = await this.prisma.car.findUnique({
+    const model = await this.prisma.model.findUnique({
       where: {
-        id: carId,
+        id: modelId,
       },
     });
 
-    if (!car) {
+    if (!model) {
       throw new NotFoundException('Модель не найдена');
     }
 
-    const isExist = user.favorites.some((car) => car.id === carId);
+    const isExist = user.favorites.some((model) => model.id === modelId);
 
     await this.prisma.user.update({
       where: {
@@ -148,7 +148,7 @@ export class UserService {
       data: {
         favorites: {
           [isExist ? 'disconnect' : 'connect']: {
-            id: carId,
+            id: modelId,
           },
         },
       },
